@@ -1,0 +1,25 @@
+TODO Demo:
+
+- Menu bouwen
+
+- Simple mode / Expert/Custom mode
+
+- Levels
+    - Act 1 (locatie / movement)
+        - 1: 1 vs 1 uit elkaar
+        - 2: 1 vs 1 dicht bij elkaar
+        - 3: 1 vs 3
+        - 4: 1 vs 3 met obstakels (rock)
+    - Act 2
+
+- Simple mode
+    - Bouw virus d.m.v. points (points uitbreiden voor het uitspelen van levels)
+        - Traits voor feeding
+        - Traits voor splitting
+        - Traits voor attacking
+        - Traits voor moving
+        - Traits voor memory
+        - Traits voor resting
+        - Traits voor
+
+- Expert mode

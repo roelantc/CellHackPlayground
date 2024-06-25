@@ -1,5 +1,4 @@
 import {MapTile} from "./MapTile.js";
-import {MapEnvironmentTile} from "./MapEnvironmentTile.js";
 
 export class Map {
 
@@ -24,7 +23,7 @@ export class Map {
         for (x = 0; x <= this.width; x++) {
             for (y = 0; y <= this.height; y++) {
                 index++;
-                this.mapTiles[index] = new MapTile(x, y, null, index);
+                this.mapTiles[index] = new MapTile(x, y, null);
 
             }
         }
@@ -41,7 +40,7 @@ export class Map {
         }
     }
 
-    getNeighbours(x: number, y: number) : MapEnvironmentTile[]
+    getNeighbours(x: number, y: number) : MapTile[]
     {
         return this.mapTiles
             .filter((mapTile) =>
@@ -49,9 +48,6 @@ export class Map {
                 mapTile.locationX <= (x + 1) &&
                 mapTile.locationY >= (y -1) &&
                 mapTile.locationY <= (y + 1)
-            )
-            .map((mapTile) =>
-                new MapEnvironmentTile(mapTile.locationX, mapTile.locationY, null)
             )
     }
 

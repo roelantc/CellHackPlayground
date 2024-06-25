@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<script>
+
+    var map = new Map();
+
+    let coordinates = { x: 1, y: 1 }
+    let sameCoordinates = { x: 1, y: 1 }
+
+    // key: x-y
+    map.set(coordinates, 123)
+
+    for (let vegetable of map.keys()) {
+        alert(vegetable.y); // cucumber, tomatoes, onion
+    }
+
+    console.log(map.get(sameCoordinates))
+
+  // const map1 = new Map();
+  //
+  // map1.set('a', 1);
+  // map1.set('b', 2);
+  // map1.set('c', 3);
+  //
+  // console.log(map1.get('a'));
+  // // Expected output: 1
+  //
+  // map1.set('a', 97);
+  //
+  // console.log(map1.get('a'));
+  // // Expected output: 97
+  //
+  // console.log(map1.size);
+  // // Expected output: 3
+  //
+  // map1.delete('b');
+  //
+  // console.log(map1.size);
+  // // Expected output: 2
+</script>
+
+</body>
+</html>

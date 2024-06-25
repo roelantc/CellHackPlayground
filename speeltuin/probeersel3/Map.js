@@ -8,9 +8,9 @@ export class Map {
     height;
     mapTiles = [];
     getMapTileIndex(x, y) {
-        return this.mapTiles.findIndex((element) => element.locationX == x && element.locationY == y);
+        return this.mapTiles.findIndex((mapTile) => mapTile.locationX == x && mapTile.locationY == y);
     }
-    getNeighbours(x, y) {
+    getEnvironment(x, y) {
         return this.mapTiles.filter((mapTile) => mapTile.locationX >= (x - 1) &&
             mapTile.locationX <= (x + 1) &&
             mapTile.locationY >= (y - 1) &&

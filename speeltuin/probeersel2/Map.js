@@ -1,4 +1,5 @@
 import { MapTile } from "./MapTile.js";
+import { Cell } from "./Cell.js";
 export class Map {
     constructor(width, height) {
         this.width = width;
@@ -33,6 +34,9 @@ export class Map {
             mapTile.locationX <= (x + 1) &&
             mapTile.locationY >= (y - 1) &&
             mapTile.locationY <= (y + 1));
+    }
+    getCells() {
+        return this.mapTiles.filter((mapTile) => mapTile.cell instanceof Cell);
     }
     generateMap() {
         let index = 0;

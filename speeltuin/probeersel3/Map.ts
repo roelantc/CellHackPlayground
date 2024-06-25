@@ -1,4 +1,5 @@
 import {MapTile} from "./MapTile.js";
+
 export class Map {
 
     constructor(width: number, height: number) {
@@ -13,10 +14,10 @@ export class Map {
 
     getMapTileIndex(x: number, y: number) : number
     {
-        return this.mapTiles.findIndex((element) => element.locationX == x && element.locationY == y);
+        return this.mapTiles.findIndex((mapTile) => mapTile.locationX == x && mapTile.locationY == y);
     }
 
-    getNeighbours(x: number, y: number) : MapTile[]
+    getEnvironment(x: number, y: number) : MapTile[]
     {
         return this.mapTiles.filter((mapTile) =>
             mapTile.locationX >= (x -1) &&

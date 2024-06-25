@@ -105,6 +105,7 @@ function draw() {
                     let location1 = map.getLocation(value.locationX, value.locationY)
                     location1[0].cell = null;
                     // value.environment[5].cell = value.cell
+
                     // value.environment[4].cell = null
                     break;
                 case Action.SplitLeft:

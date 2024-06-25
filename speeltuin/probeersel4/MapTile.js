@@ -1,11 +1,9 @@
 export class MapTile {
-    constructor(locationX, locationY, cell, index) {
+    constructor(locationX, locationY, cell) {
         this.locationX = locationX;
         this.locationY = locationY;
         this.cell = cell;
-        this.index = index;
     }
-    index;
     locationX;
     locationY;
     cell;

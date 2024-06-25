@@ -1,0 +1,78 @@
+body {
+  margin: 0;
+  background: #111;
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  //filter: blur(25px);
+  //transform: scale(2) rotate(0.55turn);
+  transition: all 1s;
+}
+
+#game-scene {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.background {
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle, rgba(17,159,187,1) 0%, rgba(3,0,47,1) 100%);
+}
+
+.virus {
+  position: absolute;
+  background: radial-gradient(circle, rgba(7, 255, 7, 0.4) 0%, rgba(44, 187, 44, 1) 100%);
+  border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%;
+  animation: wobble 5s ease-in-out alternate infinite;
+  box-shadow: 30px 30px 0 rgba(0,0,0,0.1);
+}
+
+@keyframes wobble {
+  50% {
+    border-radius: 30% 70% 60% 40% / 30% 40% 60% 40%;
+    transform: rotate(15deg);
+  }
+  100% {
+    border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%;
+  }
+}
+
+
+.size-100 {
+  width: 50px;
+  height: 50px;
+}
+.size-200 {
+  width: 100px;
+  height: 100px;
+}
+.size-300 {
+  width: 150px;
+  height: 150px;
+}
+.size-400 {
+  width: 200px;
+  height: 200px;
+}
+.size-500 {
+  width: 250px;
+  height: 250px;
+}
+
+.blur-3 {
+  filter: blur(3px);
+}
+
+.blur-5 {
+  filter: blur(5px);
+}
+
+.blur-8 {
+  filter: blur(8px);
+}

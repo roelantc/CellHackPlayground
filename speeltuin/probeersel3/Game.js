@@ -18,7 +18,11 @@ function init() {
 }
 function draw() {
     var canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext("2d");
+    if (canvas == null)
+        return;
+    // @ts-ignore
+    const ctx = canvas.getContext("2d", { alpha: false });
+    // @ts-ignore
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     //transform meuk
     // Store the current transformation matrix
@@ -30,19 +34,19 @@ function draw() {
     //
     // // Restore the transform
     //     context.restore();
+    ctx.beginPath();
     map.mapTiles.forEach(function (value) {
-        ctx.beginPath();
         ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
         ctx.rect(value.locationX * 5, value.locationY * 5, 4, 4);
-        ctx.stroke();
     });
+    ctx.stroke();
     let tiles = map.mapTiles;
     map.mapTiles = Object.create(tiles);
     map.mapTiles.forEach(function (value) {
         function moveTo(mapTile, newLocationX, newLocationY) {
             console.log("MoveTo");
-            let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
-            neighbours.map(value => {
+            let environment = map.getEnvironment(mapTile.locationX, mapTile.locationY);
+            environment.map(value => {
                 if (value.locationX == newLocationX && value.locationY == newLocationY && value.type == 0) {
                     value.energy = mapTile.energy;
                     value.type = mapTile.type;
@@ -52,7 +56,7 @@ function draw() {
             });
         }
         function eatTo(mapTile, newLocationX, newLocationY) {
-            let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
+            const neighbours = map.getEnvironment(mapTile.locationX, mapTile.locationY);
             neighbours.map(value => {
                 if (value.locationX == newLocationX && value.locationY == newLocationY && value.type != 0) {
                     console.log("EatTo");
@@ -66,7 +70,7 @@ function draw() {
         }
         function splitTo(mapTile, newLocationX, newLocationY) {
             console.log("SplitTo");
-            if (mapTile.energy >= 40) {
+            if (mapTile.energy >= 40 && map.mapTiles[map.getMapTileIndex(newLocationX, newLocationY)]?.type == 0) {
                 let newMapTile = map.mapTiles.filter(value => value.locationX == newLocationX && value.locationY == newLocationY && value.type == 0);
                 mapTile.energy -= Math.floor(mapTile.energy / 2);
                 newMapTile.map(x => {
@@ -96,13 +100,14 @@ function draw() {
             switch (action) {
                 case Action.Rest:
                     console.log("Rest");
-                    let neighbours = map.getNeighbours(value.locationX, value.locationY);
+                    let neighbours = map.getEnvironment(value.locationX, value.locationY);
                     let emptyNeighbourCells = 0;
                     neighbours.forEach(x => {
                         if (x.type == 0)
                             emptyNeighbourCells++;
                     });
                     let extraEnergy = (emptyNeighbourCells >= 3) ? (7 - 2) * emptyNeighbourCells : 1;
+                    //map.mapTiles[map.getMapTileIndex(value.locationX, value.locationY)].energy += extraEnergy;
                     value.energy += extraEnergy;
                     if (value.energy > 200) {
                         value.energy = 200;
@@ -120,29 +125,29 @@ function draw() {
                     break;
                 // Eat
                 case Action.EatLeft:
-                    eatTo(value, value.locationX - 1, value.locationY);
+                    //eatTo(value, value.locationX - 1, value.locationY)
                     break;
                 case Action.EatUp:
-                    eatTo(value, value.locationX, value.locationY + 1);
+                    //eatTo(value, value.locationX, value.locationY + 1)
                     break;
                 case Action.EatDown:
-                    eatTo(value, value.locationX, value.locationY - 1);
+                    //eatTo(value, value.locationX, value.locationY -1)
                     break;
                 case Action.EatRight:
-                    eatTo(value, value.locationX + 1, value.locationY);
+                    //eatTo(value, value.locationX + 1, value.locationY)
                     break;
                 // Move
                 case Action.MoveLeft:
-                    moveTo(value, value.locationX - 1, value.locationY);
+                    //moveTo(value, value.locationX - 1, value.locationY);
                     break;
                 case Action.MoveUp:
-                    moveTo(value, value.locationX, value.locationY - 1);
+                    //moveTo(value, value.locationX, value.locationY - 1);
                     break;
                 case Action.MoveDown:
-                    moveTo(value, value.locationX, value.locationY + 1);
+                    //moveTo(value, value.locationX, value.locationY + 1);
                     break;
                 case Action.MoveRight:
-                    moveTo(value, value.locationX + 1, value.locationY);
+                    //moveTo(value, value.locationX + 1, value.locationY);
                     break;
                 case Action.SplitLeft:
                     splitTo(value, value.locationX - 1, value.locationY);
@@ -159,7 +164,7 @@ function draw() {
             }
         }
     });
-    //setTimeout(() => {  window.requestAnimationFrame(draw); }, 1000);
-    window.requestAnimationFrame(draw);
+    setTimeout(() => { window.requestAnimationFrame(draw); }, 100);
+    //window.requestAnimationFrame(draw);
 }
 init();

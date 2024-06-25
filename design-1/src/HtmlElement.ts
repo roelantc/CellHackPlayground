@@ -1,0 +1,1 @@
+export const createElement = (tag: string = 'div'): HTMLElement => document.createElement(tag);

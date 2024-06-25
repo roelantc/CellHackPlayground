@@ -54,6 +54,11 @@ export class Map {
         )
     }
 
+    getCells() : MapTile[]
+    {
+        return this.mapTiles.filter((mapTile) => mapTile.cell instanceof Cell);
+    }
+
     generateMap() {
 
         let index = 0;

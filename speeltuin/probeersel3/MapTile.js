@@ -70,5 +70,6 @@ export class MapTile {
             ];
             return player3Actions[Math.floor(Math.random() * player3Actions.length)];
         }
+        return Action.MoveRight;
     }
 }

@@ -3,7 +3,9 @@ import { Cell } from "./Cell.js";
 import { Action } from "./Enums/Action.js";
 let message = "Toeter";
 console.log(message);
-let map = new Map(24, 24);
+let map = new Map(49, 49);
+let lastCalledTime = performance.now();
+let fps = 0;
 //map.map.push(cell);
 // TOOD: get maptile based on location and add cell
 function init() {
@@ -11,15 +13,58 @@ function init() {
     let cellPlayer1 = new Cell(1, 100);
     map.addCell(cellPlayer1, 1, 1);
     let cellPlayer2 = new Cell(2, 100);
-    map.addCell(cellPlayer2, 24, 24);
+    map.addCell(cellPlayer2, 49, 49);
     let cellPlayer3 = new Cell(3, 100);
-    map.addCell(cellPlayer3, 1, 24);
+    map.addCell(cellPlayer3, 1, 49);
+    console.log(map.getCells());
     window.requestAnimationFrame(draw);
 }
+function moveTo(mapTile, newLocationX, newLocationY) {
+    console.log("MoveTo");
+    let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
+    neighbours.map(value => {
+        if (value.locationX == newLocationX && value.locationY == newLocationY && value.cell == null) {
+            value.cell = mapTile.cell;
+            mapTile.cell = null;
+        }
+    });
+}
+function eatTo(mapTile, newLocationX, newLocationY) {
+    let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
+    neighbours.map(value => {
+        if (value.locationX == newLocationX && value.locationY == newLocationY && value.cell != null && value.cell.type != mapTile.cell.type) {
+            console.log("EatTo");
+            value.cell.energy -= 1;
+            if (value.cell.energy < 20) {
+                value.cell = null;
+            }
+            mapTile.cell.energy += 1;
+        }
+    });
+}
+function splitTo(mapTile, newLocationX, newLocationY) {
+    console.log("SplitTo");
+    if (mapTile.cell.energy >= 40) {
+        let newMapTile = map.mapTiles.filter(value => value.locationX == newLocationX && value.locationY == newLocationY && value.cell == null);
+        mapTile.cell.energy -= Math.floor(mapTile.cell.energy / 2);
+        newMapTile.map(x => x.cell = new Cell(mapTile.cell.type, mapTile.cell.energy));
+    }
+}
 function draw() {
-    var canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // FPS
+    let delta = (performance.now() - lastCalledTime) / 1000;
+    lastCalledTime = performance.now();
+    fps = ~~(1 / delta);
+    console.log(fps);
+    // @ts-ignore
+    document.getElementById('fps').textContent = fps;
+    // var canvas = document.getElementById('canvas');
+    // const ctx = canvas.getContext("2d", { alpha: false });
+    let offScreenCanvas = document.createElement('canvas');
+    offScreenCanvas.width = 750;
+    offScreenCanvas.height = 750;
+    let offScreenContext = offScreenCanvas.getContext("2d", { alpha: false });
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
     //transform meuk
     // Store the current transformation matrix
     //     context.save();
@@ -30,69 +75,40 @@ function draw() {
     //
     // // Restore the transform
     //     context.restore();
-    map.mapTiles.forEach(function (value) {
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
-        ctx.rect(value.locationX * 5, value.locationY * 5, 4, 4);
-        ctx.stroke();
-    });
-    let tiles = map.mapTiles;
-    map.mapTiles = Object.create(tiles);
-    map.mapTiles.forEach(function (value) {
-        function moveTo(mapTile, newLocationX, newLocationY) {
-            console.log("MoveTo");
-            let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
-            neighbours.map(value => {
-                if (value.locationX == newLocationX && value.locationY == newLocationY && value.cell == null) {
-                    value.cell = mapTile.cell;
-                    mapTile.cell = null;
-                }
-            });
-        }
-        function eatTo(mapTile, newLocationX, newLocationY) {
-            let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
-            neighbours.map(value => {
-                if (value.locationX == newLocationX && value.locationY == newLocationY && value.cell != null && value.cell.type != mapTile.cell.type) {
-                    console.log("EatTo");
-                    value.cell.energy -= 1;
-                    if (value.cell.energy < 20) {
-                        value.cell = null;
-                    }
-                    mapTile.cell.energy += 1;
-                }
-            });
-        }
-        function splitTo(mapTile, newLocationX, newLocationY) {
-            console.log("SplitTo");
-            if (mapTile.cell.energy >= 40) {
-                let newMapTile = map.mapTiles.filter(value => value.locationX == newLocationX && value.locationY == newLocationY && value.cell == null);
-                mapTile.cell.energy -= Math.floor(mapTile.cell.energy / 2);
-                newMapTile.map(x => x.cell = new Cell(mapTile.cell.type, mapTile.cell.energy));
+    // map.mapTiles.forEach(function(value) {
+    //         ctx.beginPath();
+    //         ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+    //         ctx.rect(value.locationX * 5, value.locationY * 5, 4, 4);
+    //         ctx.stroke();
+    // })
+    // let tiles = map.mapTiles;
+    // map.mapTiles = Object.create(tiles)
+    map.mapTiles.filter((mapTile) => mapTile.cell instanceof Cell).forEach(function (mapTile) {
+        if (offScreenContext == null)
+            return;
+        if (mapTile.cell != null) {
+            offScreenContext?.beginPath();
+            offScreenContext?.rect(mapTile.locationX * 10, mapTile.locationY * 10, 8, 8);
+            if (mapTile.cell.type == 1) {
+                offScreenContext.fillStyle = "rgba(0, 255, 0, " + (mapTile.cell.energy / 200) + ")";
             }
-        }
-        if (value.cell != null) {
-            ctx.beginPath();
-            ctx.rect(value.locationX * 5, value.locationY * 5, 4, 4);
-            if (value.cell.type == 1) {
-                ctx.fillStyle = "rgba(0, 255, 0, " + (value.cell.energy / 200) + ")";
-            }
-            else if (value.cell.type == 2) {
-                ctx.fillStyle = "rgba(0, 0, 255, " + (value.cell.energy / 200) + ")";
+            else if (mapTile.cell.type == 2) {
+                offScreenContext.fillStyle = "rgba(0, 0, 255, " + (mapTile.cell.energy / 200) + ")";
             }
             else {
-                ctx.fillStyle = "rgba(255, 0, 0, " + (value.cell.energy / 200) + ")";
+                offScreenContext.fillStyle = "rgba(255, 0, 0, " + (mapTile.cell.energy / 200) + ")";
             }
-            ctx.fill();
-            let cell = value.cell;
-            if (value.cell.energy < 20) {
-                map.mapTiles[value.index].cell = null;
+            offScreenContext.fill();
+            let cell = mapTile.cell;
+            if (mapTile.cell.energy < 20) {
+                map.mapTiles[mapTile.index].cell = null;
                 return;
             }
             let action = cell.DecideAction();
             switch (action) {
                 case Action.Rest:
                     console.log("Rest");
-                    let neighbours = map.getNeighbours(value.locationX, value.locationY);
+                    let neighbours = map.getNeighbours(mapTile.locationX, mapTile.locationY);
                     let emptyNeighbourCells = 0;
                     neighbours.forEach(x => {
                         if (x.cell == null)
@@ -108,52 +124,55 @@ function draw() {
                     break;
                 case Action.Die:
                     map.mapTiles.map(x => {
-                        if (x.locationX == value.locationX && x.locationY == value.locationY) {
+                        if (x.locationX == mapTile.locationX && x.locationY == mapTile.locationY) {
                             x.cell = null;
                         }
                     });
                     break;
                 // Eat
                 case Action.EatLeft:
-                    eatTo(value, value.locationX - 1, value.locationY);
+                    eatTo(mapTile, mapTile.locationX - 1, mapTile.locationY);
                     break;
                 case Action.EatUp:
-                    eatTo(value, value.locationX, value.locationY + 1);
+                    eatTo(mapTile, mapTile.locationX, mapTile.locationY + 1);
                     break;
                 case Action.EatDown:
-                    eatTo(value, value.locationX, value.locationY - 1);
+                    eatTo(mapTile, mapTile.locationX, mapTile.locationY - 1);
                     break;
                 case Action.EatRight:
-                    eatTo(value, value.locationX + 1, value.locationY);
+                    eatTo(mapTile, mapTile.locationX + 1, mapTile.locationY);
                     break;
                 // Move
                 case Action.MoveLeft:
-                    moveTo(value, value.locationX - 1, value.locationY);
+                    moveTo(mapTile, mapTile.locationX - 1, mapTile.locationY);
                     break;
                 case Action.MoveUp:
-                    moveTo(value, value.locationX, value.locationY - 1);
+                    moveTo(mapTile, mapTile.locationX, mapTile.locationY - 1);
                     break;
                 case Action.MoveDown:
-                    moveTo(value, value.locationX, value.locationY + 1);
+                    moveTo(mapTile, mapTile.locationX, mapTile.locationY + 1);
                     break;
                 case Action.MoveRight:
-                    moveTo(value, value.locationX + 1, value.locationY);
+                    moveTo(mapTile, mapTile.locationX + 1, mapTile.locationY);
                     break;
                 case Action.SplitLeft:
-                    splitTo(value, value.locationX - 1, value.locationY);
+                    splitTo(mapTile, mapTile.locationX - 1, mapTile.locationY);
                     break;
                 case Action.SplitUp:
-                    splitTo(value, value.locationX, value.locationY - 1);
+                    splitTo(mapTile, mapTile.locationX, mapTile.locationY - 1);
                     break;
                 case Action.SplitDown:
-                    splitTo(value, value.locationX, value.locationY + 1);
+                    splitTo(mapTile, mapTile.locationX, mapTile.locationY + 1);
                     break;
                 case Action.SplitRight:
-                    splitTo(value, value.locationX + 1, value.locationY);
+                    splitTo(mapTile, mapTile.locationX + 1, mapTile.locationY);
                     break;
             }
         }
     });
+    // @ts-ignore
+    let onScreenContext = document.getElementById('canvas')?.getContext('2d', { alpha: false });
+    onScreenContext.drawImage(offScreenCanvas, 0, 0);
     //setTimeout(() => {  window.requestAnimationFrame(draw); }, 1000);
     window.requestAnimationFrame(draw);
 }

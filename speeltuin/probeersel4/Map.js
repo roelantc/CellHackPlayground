@@ -1,5 +1,4 @@
 import { MapTile } from "./MapTile.js";
-import { MapEnvironmentTile } from "./MapEnvironmentTile.js";
 export class Map {
     constructor(width, height) {
         this.width = width;
@@ -16,7 +15,7 @@ export class Map {
         for (x = 0; x <= this.width; x++) {
             for (y = 0; y <= this.height; y++) {
                 index++;
-                this.mapTiles[index] = new MapTile(x, y, null, index);
+                this.mapTiles[index] = new MapTile(x, y, null);
             }
         }
         // TODO: Een cel moet een environment hebben, deze maken we aan op het moment dat we de cell tot leven brengen
@@ -34,8 +33,7 @@ export class Map {
             .filter((mapTile) => mapTile.locationX >= (x - 1) &&
             mapTile.locationX <= (x + 1) &&
             mapTile.locationY >= (y - 1) &&
-            mapTile.locationY <= (y + 1))
-            .map((mapTile) => new MapEnvironmentTile(mapTile.locationX, mapTile.locationY, null));
+            mapTile.locationY <= (y + 1));
     }
     getLocation(x, y) {
         return this.mapTiles.filter((mapTile) => mapTile.locationX == x && mapTile.locationY == y);
